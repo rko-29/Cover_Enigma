@@ -1,0 +1,114 @@
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <WiFiUdp.h>
+#include <NTPClient.h>
+#include <Timezone.h>
+
+float lm_value;
+int rainValue;
+int tiltValue;
+
+const char* ssid = "Redmi Note 12 5G";
+const char* password = "Rko@2908";
+
+ESP8266WebServer server(80);
+
+String page = "";
+
+const int maxDataCount = 10;   // Maximum number of data entries to store
+float data[maxDataCount];      // Array to store LM35 sensor data
+unsigned long timestamps[maxDataCount];  // Array to store timestamps of readings
+int dataIndex = 0;             // Current index in the data array
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
+
+TimeChangeRule isr = {"IST", Last, Sun, Mar, 2, 330}; // Indian Standard Time UTC offset (5 hours and 30 minutes)
+TimeChangeRule dst = {"IST", Last, Sun, Oct, 2, 0};   // No Daylight Saving Time in India
+
+Timezone tz(isr, dst);
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  pinMode(A0, INPUT);
+  pinMode(D1, INPUT_PULLUP);  // Assuming the rain sensor is connected to pin D1
+  pinMode(D2, INPUT_PULLUP);  // Assuming the tilt sensor is connected to pin D2
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  timeClient.begin();
+  timeClient.update();
+
+  server.on("/", []() {
+    page = "<html><head><style>"
+           "body { background-color: #808080; color: #000000; font-family: Verdana, Geneva, sans-serif; }"
+           "h1 { text-align: center; color: #000000; text-shadow: 2px 2px 5px #000000; }"
+           "table { border-collapse: collapse; width: 100%; }"
+           "th, td { text-align: left; padding: 8px; }"
+           "th { background-color: #808080; color: #FFFFFF; }"
+           "td { border-bottom: 1px solid #FFFFFF; }"
+           "</style></head><body>";
+    page += "<h1>Cover Enigma | MARK 1 Details</h1>";
+    page += "<h2>Temperature Data</h2>";
+    page += "<table>";
+    page += "<tr><th>Index</th><th>Timestamp (IST)</th><th>Temperature (Celsius)</th></tr>";
+    for (int i = 0; i < maxDataCount; i++) {
+      int index = (dataIndex + i) % maxDataCount;  // Calculate the index in the circular data array
+      page += "<tr><td>" + String(index) + "</td><td>" + formatTimestamp(timestamps[index]) + "</td><td>" + String(data[index]) + "</td></tr>";
+    }
+    page += "</table>";
+    page += "<h2>Water Overflow:</h2>";
+    page += "<p>Water Flow Detected: " + String(rainValue) + "</p>";
+    page += "<h2>Tilt Detection:</h2>";
+    page += "<p>Tilt Detected: " + String(tiltValue) + "</p>";
+    page += "</body></html>";
+
+    server.send(200, "text/html", page);
+  });
+
+  server.begin();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  timeClient.update();
+
+  // Read LM35 temperature sensor data
+  lm_value = analogRead(A0);
+  data[dataIndex] = (lm_value * 5000) / 1023;
+  timestamps[dataIndex] = timeClient.getEpochTime();
+  dataIndex = (dataIndex + 1) % maxDataCount;  // Increment the index and wrap around if necessary
+
+  rainValue = digitalRead(D1);  // Read the rain sensor data
+  tiltValue = digitalRead(D2);  // Read the tilt sensor data
+
+  delay(1000);
+
+  server.handleClient();
+}
+
+String formatTimestamp(unsigned long timestamp) {
+  time_t utcTime = timestamp;  // Use the UTC timestamp directly
+  
+  time_t localTime = tz.toLocal(utcTime);  // Convert to local time
+
+  char timeStr[20];
+  sprintf(timeStr, "%02d:%02d:%02d", hour(localTime), minute(localTime), second(localTime));
+
+  return String(timeStr);
+}
