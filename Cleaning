@@ -1,3 +1,4 @@
+#include<Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <Servo.h>
 //initialize lcd
@@ -8,33 +9,41 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 int pos =0 ;
 void setup()
 {
+  servo_9.attach(9);
+  servo_10.attach(10);
   lcd.init();
   lcd.clear();         
   lcd.backlight();      // Make sure backlight is on
-  
- 
+  lcd.setCursor(0,0);          
+  lcd.print("Air Quality");
+
 }
 
 void loop()
 {
   int sv=analogRead(A1);
   Serial.println(sv);
-  lcd.setCursor(0,0);          
-  lcd.print("Air Quality"); 
-  lcd.setCursor(2,1); 
+
+  lcd.setCursor(1,1); 
   lcd.print(sv);
   lcd.print(" ppm");
-  if(sv > 150){
-    for (pos = 0; pos <= 180; pos += 1) {
-    servo_9.write(pos);
-    servo_10.write(pos);
-    delay(15);
-  } for (pos = 180; pos >= 0; pos -= 1) {
-    servo_9.write(pos);
-    servo_10.write(pos);
-    delay(15);
-  }
+
+  if(sv > 350)
+  {
     
+    for (pos = 90; pos <= 180; pos += 1)
+     {
+    servo_9.write(pos);
+    servo_10.write(pos);
+    delay(15);
+     } 
+   for (pos = 180; pos >= 90; pos -= 1)
+    {
+    servo_9.write(pos);
+    servo_10.write(pos);
+    delay(15);
+    } 
   }
+
   delay(1000); 
 }
