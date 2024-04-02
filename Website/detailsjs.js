@@ -1,11 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Function to simulate fetching data from NodeMCU
+  // Function to fetch data from NodeMCU
   function fetchData() {
+    // You should replace this with actual code to fetch data from NodeMCU
+    // For example, you might use AJAX to send a request to the NodeMCU server
+    // and receive sensor data in response
     return {
-      temperature: Math.random() * 100, // Example temperature value
-      waterLevel: Math.random() * 100, // Example water level value
-      toxicity: Math.random() * 100, // Example toxicity value
-      tilt: Math.random() < 0.5 ? "Yes" : "No", // Random tilt value (Yes or No)
+      temperature: /* Replace with actual temperature reading from NodeMCU */,
+      waterLevel: /* Replace with actual water level reading from NodeMCU */,
+      toxicity: /* Replace with actual toxicity reading from NodeMCU */,
+      tilt: /* Replace with actual tilt reading from NodeMCU */,
     };
   }
 
@@ -14,6 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
     chart.data.datasets[0].data[0] = value;
     chart.update();
     document.getElementById(valueElementId).textContent = value.toFixed(2);
+  }
+
+  // Update sensor values
+  function updateSensorValues(data) {
+    // Update temperature chart
+    updateChart(temperatureChart, data.temperature, "temperature-value");
+
+    // Update water level chart
+    updateChart(waterLevelChart, data.waterLevel, "water-level-value");
+
+    // Update toxicity chart
+    updateChart(toxicityChart, data.toxicity, "toxicity-value");
+
+    // Update tilt
+    document.getElementById("tilt").textContent = data.tilt;
   }
 
   // Create gauge chart
@@ -45,28 +63,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Update chart data
-  function updateCharts() {
-    const data = fetchData();
-
-    // Update temperature chart
-    updateChart(temperatureChart, data.temperature, "temperature-value");
-
-    // Update water level chart
-    updateChart(waterLevelChart, data.waterLevel, "water-level-value");
-
-    // Update toxicity chart
-    updateChart(toxicityChart, data.toxicity, "toxicity-value");
-
-    // Update tilt
-    document.getElementById("tilt").textContent = data.tilt;
-  }
-
-  // Update charts on page load
+  // Create charts on page load
   const temperatureChart = createChart("temperature-chart", "Temperature");
   const waterLevelChart = createChart("water-level-chart", "Water Level");
   const toxicityChart = createChart("toxicity-chart", "Toxicity");
-  updateCharts();
+
+  // Update charts with NodeMCU data
+  function updateCharts() {
+    const data = fetchData();
+    updateSensorValues(data);
+  }
 
   // Update charts every 5 seconds
   setInterval(updateCharts, 5000);
