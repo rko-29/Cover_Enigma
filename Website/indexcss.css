@@ -2,6 +2,8 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f9f9f9; /* Light Gray */
   color: #333; /* Dark Gray */
+  margin: 0;
+  padding: 0;
 }
 
 .container {
@@ -16,6 +18,10 @@ body {
 h1 {
   text-align: center;
   color: #3498db; /* Belize Hole Blue */
+}
+
+.form {
+  margin-bottom: 20px;
 }
 
 .form-group {
@@ -52,10 +58,10 @@ button:hover {
   background-color: #2980b9; /* Belize Hole Dark Blue */
 }
 
-p {
+.switch {
   text-align: center;
 }
 
-a {
+.switch a {
   color: #3498db; /* Belize Hole Blue */
 }

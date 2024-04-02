@@ -1,22 +1,32 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const passwordInput = document.getElementById("password");
+  const loginForm = document.getElementById("login-form");
+  const signupForm = document.getElementById("signup-form");
+  const switchToSignupLink = document.getElementById("switch-to-signup");
+  const switchToLoginLink = document.getElementById("switch-to-login");
 
-  passwordInput.addEventListener("input", function () {
-    const password = passwordInput.value;
-    const passwordStrength = calculatePasswordStrength(password);
-
-    if (passwordStrength < 40) {
-      passwordInput.setCustomValidity(
-        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-      );
-    } else {
-      passwordInput.setCustomValidity("");
-    }
+  switchToSignupLink.addEventListener("click", function (event) {
+    event.preventDefault();
+    loginForm.style.display = "none";
+    signupForm.style.display = "block";
   });
 
-  function calculatePasswordStrength(password) {
-    // Calculate password strength here (you can use any method/library you prefer)
-    // For simplicity, let's just calculate the length of the password
-    return password.length;
-  }
+  switchToLoginLink.addEventListener("click", function (event) {
+    event.preventDefault();
+    loginForm.style.display = "block";
+    signupForm.style.display = "none";
+  });
+
+  loginForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Handle login form submission
+    // You can add your login logic here
+    console.log("Login form submitted");
+  });
+
+  signupForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Handle signup form submission
+    // You can add your signup logic here
+    console.log("Sign up form submitted");
+  });
 });
