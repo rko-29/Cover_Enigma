@@ -1,15 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Function to fetch data from NodeMCU
-  function fetchData() {
-    // You should replace this with actual code to fetch data from NodeMCU
-    // For example, you might use AJAX to send a request to the NodeMCU server
-    // and receive sensor data in response
-    return {
-      temperature: /* Replace with actual temperature reading from NodeMCU */,
-      waterLevel: /* Replace with actual water level reading from NodeMCU */,
-      toxicity: /* Replace with actual toxicity reading from NodeMCU */,
-      tilt: /* Replace with actual tilt reading from NodeMCU */,
-    };
+  // Function to fetch sensor data from NodeMCU
+  async function fetchSensorData() {
+    try {
+      // Fetch temperature data
+      const temperatureResponse = await fetch(
+        "http://192.168.117.92/temperature"
+      );
+      const temperatureData = await temperatureResponse.text();
+
+      // Fetch water level data
+      const waterLevelResponse = await fetch(
+        "http://192.168.117.92/waterLevel"
+      );
+      const waterLevelData = await waterLevelResponse.text();
+
+      // Fetch toxicity data
+      const toxicityResponse = await fetch("http://192.168.117.92/toxicity");
+      const toxicityData = await toxicityResponse.text();
+
+      // Fetch tilt data
+      const tiltResponse = await fetch("http://192.168.117.92/tilt");
+      const tiltData = await tiltResponse.text();
+
+      // Return fetched sensor data
+      return {
+        temperature: temperatureData,
+        waterLevel: waterLevelData,
+        toxicity: toxicityData,
+        tilt: tiltData,
+      };
+    } catch (error) {
+      console.error("Error fetching sensor data:", error);
+      return null;
+    }
   }
 
   // Update gauge chart data
@@ -17,21 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     chart.data.datasets[0].data[0] = value;
     chart.update();
     document.getElementById(valueElementId).textContent = value.toFixed(2);
-  }
-
-  // Update sensor values
-  function updateSensorValues(data) {
-    // Update temperature chart
-    updateChart(temperatureChart, data.temperature, "temperature-value");
-
-    // Update water level chart
-    updateChart(waterLevelChart, data.waterLevel, "water-level-value");
-
-    // Update toxicity chart
-    updateChart(toxicityChart, data.toxicity, "toxicity-value");
-
-    // Update tilt
-    document.getElementById("tilt").textContent = data.tilt;
   }
 
   // Create gauge chart
@@ -63,16 +71,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Create charts on page load
+  // Update chart data
+  async function updateCharts() {
+    const data = await fetchSensorData();
+
+    if (!data) {
+      return; // Stop execution if there's an error fetching data
+    }
+
+    // Update temperature chart
+    updateChart(
+      temperatureChart,
+      parseFloat(data.temperature),
+      "temperature-value"
+    );
+
+    // Update water level chart
+    updateChart(
+      waterLevelChart,
+      parseFloat(data.waterLevel),
+      "water-level-value"
+    );
+
+    // Update toxicity chart
+    updateChart(toxicityChart, parseFloat(data.toxicity), "toxicity-value");
+
+    // Update tilt
+    document.getElementById("tilt").textContent = data.tilt;
+  }
+
+  // Update charts on page load
   const temperatureChart = createChart("temperature-chart", "Temperature");
   const waterLevelChart = createChart("water-level-chart", "Water Level");
   const toxicityChart = createChart("toxicity-chart", "Toxicity");
-
-  // Update charts with NodeMCU data
-  function updateCharts() {
-    const data = fetchData();
-    updateSensorValues(data);
-  }
+  updateCharts();
 
   // Update charts every 5 seconds
   setInterval(updateCharts, 5000);
