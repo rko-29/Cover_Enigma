@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Enigma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        /* Login Page */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"],
+        .login-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .login-container input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* User Interface Page */
+        .user-interface-container {
+            padding: 20px;
+        }
+
+        .manhole-card {
+            width: 200px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .manhole-card:hover {
+            transform: scale(1.1);
+        }
+
+        /* Manhole Details Page */
+        .manhole-details-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .manhole-details-container h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="submit" value="Login">
+    </form>
+</div>
+
+<!-- User Interface Page -->
+<div class="user-interface-container" style="display: none;">
+    <h2>Manholes</h2>
+    <div class="manhole-card" onclick="showManholeDetails(1)">
+        <h3>Manhole 1</h3>
+        <img src="manhole1.jpg" alt="Manhole 1">
+        <p>Address: Lorem ipsum dolor sit amet</p>
+    </div>
+    <div class="manhole-card" onclick="showManholeDetails(2)">
+        <h3>Manhole 2</h3>
+        <img src="manhole2.jpg" alt="Manhole 2">
+        <p>Address: Lorem ipsum dolor sit amet</p>
+    </div>
+    <div class="manhole-card" onclick="showManholeDetails(3)">
+        <h3>Manhole 3</h3>
+        <img src="manhole3.jpg" alt="Manhole 3">
+        <p>Address: Lorem ipsum dolor sit amet</p>
+    </div>
+</div>
+
+<!-- Manhole Details Page -->
+<div class="manhole-details-container" style="display: none;">
+    <h2>Manhole Details</h2>
+    <div id="manholeDetails"></div>
+</div>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+
+        // Dummy login check (replace with actual authentication logic)
+        if (username === "admin" && password === "password") {
+            // Show user interface page after successful login
+            document.querySelector(".login-container").style.display = "none";
+            document.querySelector(".user-interface-container").style.display = "block";
+        } else {
+            alert("Invalid username or password");
+        }
+    });
+
+    // Function to display manhole details
+    function showManholeDetails(manholeNumber) {
+        // Dummy function to fetch manhole details (replace with actual data retrieval)
+        var manholeDetails = "Manhole " + manholeNumber + "<br>";
+        manholeDetails += "Location: Lorem ipsum dolor sit amet<br>";
+        manholeDetails += "Depth: 3 meters<br>";
+        manholeDetails += "Temperature: 25°C<br>";
+        manholeDetails += "Water Level: Normal<br>";
+
+        document.getElementById("manholeDetails").innerHTML = manholeDetails;
+
+        // Show manhole details page
+        document.querySelector(".user-interface-container").style.display = "none";
+        document.querySelector(".manhole-details-container").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
