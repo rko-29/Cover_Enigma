@@ -1,42 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Function to fetch sensor data from NodeMCU via Fiddler proxy
-  async function fetchSensorData() {
-    try {
-      // Fetch temperature data
-      const temperatureResponse = await fetch(
-        "http://localhost:8888/http://192.168.117.92/temperature"
-      );
-      const temperatureData = await temperatureResponse.text();
-
-      // Fetch water level data
-      const waterLevelResponse = await fetch(
-        "http://localhost:8888/http://192.168.117.92/waterLevel"
-      );
-      const waterLevelData = await waterLevelResponse.text();
-
-      // Fetch toxicity data
-      const toxicityResponse = await fetch(
-        "http://localhost:8888/http://192.168.117.92/toxicity"
-      );
-      const toxicityData = await toxicityResponse.text();
-
-      // Fetch tilt data
-      const tiltResponse = await fetch(
-        "http://localhost:8888/http://192.168.117.92/tilt"
-      );
-      const tiltData = await tiltResponse.text();
-
-      // Return fetched sensor data
-      return {
-        temperature: temperatureData,
-        waterLevel: waterLevelData,
-        toxicity: toxicityData,
-        tilt: tiltData,
-      };
-    } catch (error) {
-      console.error("Error fetching sensor data:", error);
-      return null;
-    }
+  // Function to simulate fetching data from NodeMCU
+  function fetchData() {
+    return {
+      temperature: Math.random() * 100, // Example temperature value
+      waterLevel: Math.random() * 100, // Example water level value
+      toxicity: Math.random() * 100, // Example toxicity value
+      tilt: Math.random() < 0.5 ? "Yes" : "No", // Random tilt value (Yes or No)
+    };
   }
 
   // Update gauge chart data
@@ -76,29 +46,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Update chart data
-  async function updateCharts() {
-    const data = await fetchSensorData();
-
-    if (!data) {
-      return; // Stop execution if there's an error fetching data
-    }
+  function updateCharts() {
+    const data = fetchData();
 
     // Update temperature chart
-    updateChart(
-      temperatureChart,
-      parseFloat(data.temperature),
-      "temperature-value"
-    );
+    updateChart(temperatureChart, data.temperature, "temperature-value");
 
     // Update water level chart
-    updateChart(
-      waterLevelChart,
-      parseFloat(data.waterLevel),
-      "water-level-value"
-    );
+    updateChart(waterLevelChart, data.waterLevel, "water-level-value");
 
     // Update toxicity chart
-    updateChart(toxicityChart, parseFloat(data.toxicity), "toxicity-value");
+    updateChart(toxicityChart, data.toxicity, "toxicity-value");
 
     // Update tilt
     document.getElementById("tilt").textContent = data.tilt;
